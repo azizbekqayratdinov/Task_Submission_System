@@ -14,12 +14,18 @@ WORKDIR /var/www
 # Copy project files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Make entrypoint script executable
+# Copy entrypoint script and set permissions
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # Set permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Expose port and start server
+# Expose port
 EXPOSE 8000
-CMD php artisan serve --host=0.0.0.0 --port=8000
+
+# Set entrypoint
+ENTRYPOINT ["docker-entrypoint.sh"]
